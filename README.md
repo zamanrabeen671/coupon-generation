@@ -51,7 +51,7 @@ docker-compose up --build
 
 
 
-AAPI Endpoints
+API Endpoints
 Coupon Service (Admin)
 1️⃣ Register User
 
