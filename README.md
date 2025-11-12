@@ -53,7 +53,7 @@ docker-compose up --build
 
 API Endpoints
 Coupon Service (Admin)
-1️⃣ Register User
+ 1. Register User
 
 POST /api/v1/auth/register
 Body:
@@ -63,7 +63,7 @@ Body:
   "password": "123456"
 }
 
-2️⃣ Login
+ 2. Login
 
 POST /api/v1/auth/login
 Body:
@@ -73,7 +73,7 @@ Body:
   "password": "123456"
 }
 
-3️⃣ Create Coupon
+ 3. Create Coupon
 
 POST /api/v1/admin/coupons
 Body:
@@ -87,7 +87,7 @@ Body:
   "maxUsagePerUser": 5
 }
 
-4️⃣ Assign Coupon to User
+ 4. Assign Coupon to User
 
 POST /api/v1/admin/coupons/:couponId/assign
 Body:
@@ -97,7 +97,7 @@ Body:
 }
 
 Validation Service (User)
-1️⃣ Redeem Coupon
+ 1. Redeem Coupon
 
 POST /api/v1/redeem
 Body:
@@ -108,7 +108,7 @@ Body:
 }
 
 
-✅ Returns:
+Returns:
 
 Success if coupon is valid.
 
