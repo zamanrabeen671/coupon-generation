@@ -52,34 +52,31 @@ docker-compose up --build
 
 
 API Endpoints
-Coupon-Service (Admin)
-
-Register User
+Coupon Service (Admin)
+ 1. Register User
 
 POST /api/v1/auth/register
-Content-Type: application/json
+Body:
 
 {
   "email": "user@example.com",
   "password": "123456"
 }
 
-
-Login
+ 2. Login
 
 POST /api/v1/auth/login
-Content-Type: application/json
+Body:
 
 {
   "email": "user@example.com",
   "password": "123456"
 }
 
-
-Create Coupon (Admin)
+ 3. Create Coupon
 
 POST /api/v1/admin/coupons
-Content-Type: application/json
+Body:
 
 {
   "code": "WELCOME10",
@@ -90,24 +87,29 @@ Content-Type: application/json
   "maxUsagePerUser": 5
 }
 
-
-Assign User-Specific Coupon
+ 4. Assign Coupon to User
 
 POST /api/v1/admin/coupons/:couponId/assign
-Content-Type: application/json
+Body:
 
 {
   "userId": 1
 }
 
-Validation-Service (User)
-
-Redeem Coupon
+Validation Service (User)
+ 1. Redeem Coupon
 
 POST /api/v1/redeem
-Content-Type: application/json
+Body:
 
 {
   "userId": 1,
   "code": "WELCOME10"
 }
+
+
+Returns:
+
+Success if coupon is valid.
+
+Error if coupon is expired, max usage reached, or invalid.
