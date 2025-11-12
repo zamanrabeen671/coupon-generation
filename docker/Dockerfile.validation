@@ -1,0 +1,12 @@
+FROM node:20-alpine
+WORKDIR /app
+
+COPY validation-service/package*.json ./
+RUN npm install
+
+COPY validation-service/ ./
+
+RUN npm run build
+
+EXPOSE 3001
+CMD ["node", "dist/server.js"]

@@ -1,0 +1,33 @@
+# Node_modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build artifacts
+dist/
+build/
+.next/ # For Next.js projects
+.nuxt/ # For Nuxt.js projects
+out/ # Common for various build outputs
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and OS specific files
+.vscode/ # VS Code settings
+.idea/ # IntelliJ IDEA settings
+.DS_Store # macOS specific
+Thumbs.db # Windows specific
+
+# Test results
+coverage/
+
+# npm package cache
+.npm/

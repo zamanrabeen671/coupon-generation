@@ -1,4 +1,5 @@
 import { AppDataSource } from "../config/data-source";
+import { connectRabbitMQ } from "../config/rabbitmq";
 import { Coupon, CouponType } from "../entities/coupon.entity";
 import { User } from "../entities/user.entity";
 import { UserCoupon } from "../entities/userCoupon.entity";
@@ -8,42 +9,48 @@ export class AdminCouponService {
   private userRepo = AppDataSource.getRepository(User);
   private userCouponRepo = AppDataSource.getRepository(UserCoupon);
 
-  // Create a new coupon (user-specific or time-specific)
   async createCoupon(data: {
     code: string;
     type: CouponType;
     validFrom?: Date;
     validUntil?: Date;
     maxUsagePerUser?: number;
-    assignedUserId?: number; // for user-specific
+    assignedUserId?: number;
   }) {
     const { assignedUserId, ...couponData } = data;
 
     const coupon = this.couponRepo.create(couponData);
     await this.couponRepo.save(coupon);
 
-    // If user-specific, assign coupon to the user
+    // Publish event: coupon created
+    const channel = await connectRabbitMQ();
+    channel.publish(
+      "coupon_exchange",
+      "coupon_created",
+      Buffer.from(JSON.stringify({ couponId: coupon.id, code: coupon.code, type: coupon.type }))
+    );
+
     if (assignedUserId && data.type === CouponType.USER_SPECIFIC) {
       const user = await this.userRepo.findOne({ where: { id: assignedUserId } });
       if (!user) throw new Error("Assigned user not found");
 
-      const userCoupon = this.userCouponRepo.create({
-        user,
-        coupon,
-        usageCount: 0,
-      });
+      const userCoupon = this.userCouponRepo.create({ user, coupon, usageCount: 0 });
       await this.userCouponRepo.save(userCoupon);
+
+      channel.publish(
+        "coupon_exchange",
+        "coupon_assigned",
+        Buffer.from(JSON.stringify({ couponId: coupon.id, userId: user.id }))
+      );
     }
 
     return coupon;
   }
 
-  // List all coupons
   async listCoupons() {
     return this.couponRepo.find({ relations: ["userCoupons"] });
   }
 
-  // Assign existing coupon to a user (for user-specific)
   async assignCouponToUser(couponId: number, userId: number) {
     const coupon = await this.couponRepo.findOne({ where: { id: couponId } });
     const user = await this.userRepo.findOne({ where: { id: userId } });
@@ -54,6 +61,13 @@ export class AdminCouponService {
 
     const userCoupon = this.userCouponRepo.create({ coupon, user, usageCount: 0 });
     await this.userCouponRepo.save(userCoupon);
+
+    const channel = await connectRabbitMQ();
+    channel.publish(
+      "coupon_exchange",
+      "coupon_assigned",
+      Buffer.from(JSON.stringify({ couponId: coupon.id, userId: user.id }))
+    );
 
     return userCoupon;
   }
